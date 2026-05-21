@@ -8,7 +8,13 @@ interface Params {
 
 export async function GET(_req: NextRequest, { params }: Params) {
   await connectDB();
-  const listing = await Listing.findById(params.id).lean();
+
+  const listing = await Listing.findByIdAndUpdate(
+    params.id,
+    { $inc: { views: 1 } },
+    { new: true }
+  ).lean();
+
   if (!listing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(listing);
 }
@@ -16,13 +22,19 @@ export async function GET(_req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   await connectDB();
   const body = await req.json();
-  const listing = await Listing.findByIdAndUpdate(params.id, body, { new: true });
+
+  // Prevent overwriting immutable fields via PATCH
+  const { _id, postedAt, ...updates } = body;
+  void _id; void postedAt;
+
+  const listing = await Listing.findByIdAndUpdate(params.id, updates, { new: true });
   if (!listing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(listing);
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   await connectDB();
-  await Listing.findByIdAndDelete(params.id);
+  const listing = await Listing.findByIdAndDelete(params.id);
+  if (!listing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ success: true });
 }
