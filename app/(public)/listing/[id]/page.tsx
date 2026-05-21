@@ -118,7 +118,7 @@ export default async function ListingDetailPage({ params }: Props) {
                 /{listing.priceType === 'per-year' ? 'per year' : 'per month'}
               </span>
             </p>
-            {listing.negotiable && (
+            {Boolean(listing.negotiable) && (
               <span className="inline-block mt-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
                 Negotiable
               </span>
@@ -126,7 +126,7 @@ export default async function ListingDetailPage({ params }: Props) {
           </div>
 
           {/* Description */}
-          {listing.description && (
+          {Boolean(listing.description) && (
             <div>
               <h2 className="font-bold text-gray-900 mb-2">Description</h2>
               <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
