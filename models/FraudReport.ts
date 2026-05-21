@@ -1,26 +1,46 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+interface IAiAnalysis {
+  riskLevel: 'safe' | 'caution' | 'danger';
+  score: number;
+  redFlags: string[];
+  greenFlags: string[];
+  recommendation: string;
+  nextSteps: string[];
+}
+
 export interface IFraudReport extends Document {
-  input: string;
-  verdict: 'safe' | 'suspicious' | 'likely_fraud';
-  reasoning: string;
-  confidence: number;
+  listingId?: mongoose.Types.ObjectId;
+  documentsUploaded: string[];
+  propertyType: 'housing' | 'campus-shop' | 'town-shop';
+  userDescription?: string;
+  engisResult?: string;
+  aiAnalysis?: IAiAnalysis;
+  paid: boolean;
   createdAt: Date;
 }
 
-const FraudReportSchema = new Schema<IFraudReport>(
-  {
-    input: { type: String, required: true },
-    verdict: {
-      type: String,
-      enum: ['safe', 'suspicious', 'likely_fraud'],
-      required: true,
-    },
-    reasoning: { type: String, required: true },
-    confidence: { type: Number, required: true },
+const FraudReportSchema = new Schema<IFraudReport>({
+  listingId: { type: Schema.Types.ObjectId, ref: 'Listing' },
+  documentsUploaded: [{ type: String }],
+  propertyType: {
+    type: String,
+    enum: ['housing', 'campus-shop', 'town-shop'],
+    required: true,
   },
-  { timestamps: true }
-);
+  userDescription: { type: String },
+  engisResult: { type: String },
+  aiAnalysis: {
+    riskLevel: { type: String, enum: ['safe', 'caution', 'danger'] },
+    score: { type: Number },
+    redFlags: [{ type: String }],
+    greenFlags: [{ type: String }],
+    recommendation: { type: String },
+    nextSteps: [{ type: String }],
+  },
+  paid: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+});
 
 const FraudReport: Model<IFraudReport> =
   mongoose.models.FraudReport ??
