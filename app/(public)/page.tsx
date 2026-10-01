@@ -29,10 +29,10 @@ export default async function HomePage() {
           Nsukka · Enugu State · Nigeria
         </p>
         <h1 className="text-4xl md:text-5xl font-extrabold leading-tight max-w-2xl mx-auto">
-          Find Housing &amp; Shops<br className="hidden sm:block" /> in Nsukka
+          Tell Ada What You Need.<br className="hidden sm:block" /> Find the Right Place.
         </h1>
         <p className="mt-4 text-green-100 text-base md:text-lg max-w-lg mx-auto">
-          Rooms, self-contained, flats &amp; campus shops near UNN — with verification status shown clearly
+          An agentic housing concierge for Nsukka and UNN: discover, compare, screen risk and move from search to viewing with fewer dead ends.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
           <Link
@@ -96,27 +96,27 @@ export default async function HomePage() {
       <section className="bg-gray-50 py-14 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-extrabold text-center text-gray-900 mb-2">
-            How Ada Protects You
+            Meet Your Ada Housing Agent
           </h2>
           <p className="text-center text-gray-500 text-sm mb-8 max-w-md mx-auto">
-            Ada screens the information you provide for common risk signals and suggests independent verification steps
+            Ada turns your needs into a housing mission, searches approved inventory, ranks suitable options and guides the next safe step.
           </p>
           <div className="grid md:grid-cols-3 gap-5">
             {[
               {
                 icon: <Search size={28} style={{ color: '#0f5132' }} />,
-                title: '1. Find Listings',
-                desc: 'Browse housing and shops with clear verification status. Filter by type, location, price, and proximity to UNN.',
+                title: '1. Tell Ada Your Need',
+                desc: 'Describe your budget, preferred area, room type, campus proximity and priorities in normal language.',
               },
               {
                 icon: <Shield size={28} style={{ color: '#0f5132' }} />,
-                title: '2. Verify Documents',
-                desc: 'Provide property details or document references. Ada screens for warning signs; it does not authenticate documents or title.',
+                title: '2. Get a Ranked Shortlist',
+                desc: 'Ada searches approved UloFind inventory and ranks matches using your constraints, verification status and fit.',
               },
               {
                 icon: <CheckCircle size={28} style={{ color: '#0f5132' }} />,
-                title: '3. Move In Safely',
-                desc: 'Get a risk score, warning signs, and practical checks to complete independently before making payment.',
+                title: '3. Screen, View & Decide',
+                desc: 'Screen risk, compare options and follow a verification checklist before viewing, commitment or payment.',
               },
             ].map((card) => (
               <div key={card.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
