@@ -24,8 +24,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (invalidId(params.id)) return NextResponse.json({ error: 'Invalid listing id' }, { status: 400 });
   await connectDB();
   const body = await req.json();
-  const allowed = ['title','description','price','priceType','negotiable','photos','available','featured','verified','amenities','location','distanceFromGate'];
+  const allowed = ['title','description','price','priceType','negotiable','photos','available','moderationStatus','moderationNote','featured','verified','amenities','location','distanceFromGate'];
   const updates = Object.fromEntries(Object.entries(body).filter(([key]) => allowed.includes(key)));
+  if (updates.moderationStatus === 'rejected') updates.featured = false;
   const listing = await Listing.findByIdAndUpdate(params.id, updates, { new: true, runValidators: true });
   if (!listing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(listing);
