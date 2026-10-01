@@ -1,0 +1,25 @@
+name: DevShield Security Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  devshield:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: MABRIG DevShield
+        uses: mabrig1/mabrig-devshield-ai@v1
+        with:
+          github-token: ${{ github.token }}
+          fail-on: high
+          dependency-agentic: auto

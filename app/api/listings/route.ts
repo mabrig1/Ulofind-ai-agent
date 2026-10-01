@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 import Listing from '@/models/Listing';
 import { resend } from '@/lib/resend';
 
-const ADMIN_EMAIL = 'mabrigkorie@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const PAGE_SIZE = 50;
 
 export async function GET(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
 
-  const filter: Record<string, unknown> = { available: true };
+  const filter: Record<string, unknown> = { available: true, moderationStatus: 'approved' };
 
   const category = searchParams.get('category');
   if (category) filter.category = category;
@@ -66,6 +66,15 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
+  // Public submissions can never self-approve or self-feature.
+  delete body.verified;
+  delete body.featured;
+  delete body.views;
+  delete body.postedAt;
+  delete body.expiresAt;
+  delete body.moderationStatus;
+  delete body.moderationNote;
+
   const required = ['category', 'title', 'price', 'agentName', 'agentPhone'];
   const missing = required.filter((f) => !body[f] && body[f] !== 0);
   if (missing.length) {
@@ -78,9 +87,16 @@ export async function POST(req: NextRequest) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
 
+  const price = Number(body.price);
+  if (!Number.isFinite(price) || price <= 0) return NextResponse.json({ error: 'price must be a positive number' }, { status: 400 });
+  body.price = price;
+  body.verified = false;
+  body.featured = false;
+  body.moderationStatus = 'pending';
+
   const listing = await Listing.create({ ...body, expiresAt });
 
-  await resend.emails.send({
+  if (ADMIN_EMAIL) await resend.emails.send({
     from: 'UloFind <noreply@ulofind.fintigen.com>',
     to: ADMIN_EMAIL,
     subject: `New listing posted on UloFind: ${listing.title}`,
