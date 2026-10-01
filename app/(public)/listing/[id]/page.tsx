@@ -19,7 +19,8 @@ async function getListing(id: string) {
       { $inc: { views: 1 } },
       { new: true }
     ).lean();
-    return doc ? (JSON.parse(JSON.stringify(doc)) as Record<string, unknown>) : null;
+    if (!doc || doc.moderationStatus !== 'approved' || !doc.available) return null;
+    return JSON.parse(JSON.stringify(doc)) as Record<string, unknown>;
   } catch {
     return null;
   }
@@ -168,10 +169,10 @@ export default async function ListingDetailPage({ params }: Props) {
             <Shield size={20} className="text-yellow-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-semibold text-yellow-800 text-sm">
-                Verify this property before paying
+                Screen this property before paying
               </p>
               <p className="text-xs text-yellow-600 mt-0.5">
-                Use Ada AI to check for fraud signals specific to Nsukka →
+                Use Ada AI to screen for risk signals, then verify independently →
               </p>
             </div>
           </Link>
