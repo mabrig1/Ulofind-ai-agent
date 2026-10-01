@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
 
-  const filter: Record<string, unknown> = { available: true };
+  const filter: Record<string, unknown> = { available: true, moderationStatus: 'approved' };
 
   const category = searchParams.get('category');
   if (category) filter.category = category;
@@ -72,6 +72,8 @@ export async function POST(req: NextRequest) {
   delete body.views;
   delete body.postedAt;
   delete body.expiresAt;
+  delete body.moderationStatus;
+  delete body.moderationNote;
 
   const required = ['category', 'title', 'price', 'agentName', 'agentPhone'];
   const missing = required.filter((f) => !body[f] && body[f] !== 0);
@@ -90,6 +92,7 @@ export async function POST(req: NextRequest) {
   body.price = price;
   body.verified = false;
   body.featured = false;
+  body.moderationStatus = 'pending';
 
   const listing = await Listing.create({ ...body, expiresAt });
 
