@@ -30,6 +30,8 @@ export interface IListing extends Document {
   agentPhone: string;
   agentWhatsApp?: string;
   available: boolean;
+  moderationStatus: 'pending' | 'approved' | 'rejected';
+  moderationNote?: string;
   featured: boolean;
   verified: boolean;
   views: number;
@@ -80,6 +82,8 @@ const ListingSchema = new Schema<IListing>({
   agentPhone: { type: String, required: true },
   agentWhatsApp: { type: String },
   available: { type: Boolean, default: true },
+  moderationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
+  moderationNote: { type: String },
   featured: { type: Boolean, default: false },
   verified: { type: Boolean, default: false },
   views: { type: Number, default: 0 },
