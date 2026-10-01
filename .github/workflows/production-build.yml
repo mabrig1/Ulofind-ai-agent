@@ -1,0 +1,40 @@
+name: Production Build Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - claude/setup-ulofind-nextjs-U517M
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017/ulofind-build
+          CLOUDINARY_CLOUD_NAME: build
+          CLOUDINARY_API_KEY: build
+          CLOUDINARY_API_SECRET: build
+          ANTHROPIC_API_KEY: build
+          RESEND_API_KEY: re_build
+          ADMIN_EMAIL: build@example.com
+          ADMIN_API_KEY: build-only-key
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
