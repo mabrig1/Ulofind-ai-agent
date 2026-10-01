@@ -10,12 +10,12 @@ export default async function DashboardPage() {
   await connectDB();
   const [total, verified, pending, leads, reports, danger, recent] = await Promise.all([
     Listing.countDocuments({ available: true }),
-    Listing.countDocuments({ available: true, verified: true }),
-    Listing.countDocuments({ available: true, verified: false }),
+    Listing.countDocuments({ available: true, moderationStatus: 'approved', verified: true }),
+    Listing.countDocuments({ available: true, moderationStatus: 'pending' }),
     Lead.countDocuments(),
     FraudReport.countDocuments(),
     FraudReport.countDocuments({ 'aiAnalysis.riskLevel': 'danger' }),
-    Listing.find({ available: true }).sort({ postedAt: -1 }).limit(8).lean(),
+    Listing.find({ available: true }).sort({ moderationStatus: 1, postedAt: -1 }).limit(8).lean(),
   ]);
 
   const stats = [
@@ -58,8 +58,8 @@ export default async function DashboardPage() {
                   <p className="font-bold text-gray-900">{item.title}</p>
                   <p className="text-sm text-gray-500">{item.category} · ₦{Number(item.price).toLocaleString()} · {item.location || item.townArea || item.campusZone || 'Location not supplied'}</p>
                 </div>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full w-fit ${item.verified ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
-                  {item.verified ? 'Verified' : 'Needs review'}
+                <span className={`text-xs font-bold px-3 py-1 rounded-full w-fit ${item.moderationStatus === 'approved' ? 'bg-green-100 text-green-800' : item.moderationStatus === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}`}>
+                  {item.moderationStatus === 'pending' ? 'Pending approval' : item.moderationStatus === 'rejected' ? 'Rejected' : item.verified ? 'Approved + verified' : 'Approved'}
                 </span>
               </div>
             ))}
